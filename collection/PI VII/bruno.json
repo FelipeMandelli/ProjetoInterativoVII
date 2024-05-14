@@ -1,0 +1,9 @@
+{
+  "version": "1",
+  "name": "PI VII",
+  "type": "collection",
+  "ignore": [
+    "node_modules",
+    ".git"
+  ]
+}
