@@ -3,11 +3,19 @@ package service
 import "log"
 
 type Provider struct {
-	Log *log.Logger
+	log *log.Logger
 }
 
 func NewProvider() Provider {
 	return Provider{
-		Log: log.Default(),
+		log: log.Default(),
 	}
+}
+
+func (p *Provider) Logf(str string) {
+	p.log.Printf(str)
+}
+
+func (p *Provider) LogFatalf(str string) {
+	p.log.Fatalf(str)
 }

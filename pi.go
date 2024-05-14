@@ -19,6 +19,6 @@ func main() {
 	}
 
 	if err := httpServer.ListenAndServe(); err != nil {
-		provider.Log.Fatalf("error serving api: %s", err.Error())
+		provider.LogFatalf(fmt.Sprintf("error serving api: %s", err.Error()))
 	}
 }
