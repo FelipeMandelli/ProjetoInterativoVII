@@ -8,9 +8,6 @@ import (
 )
 
 func main() {
-
-	fmt.Println("Hello World!")
-
 	provider := service.NewProvider()
 
 	httpServer := &http.Server{
@@ -18,6 +15,7 @@ func main() {
 		Handler: service.CreateRouter(provider),
 	}
 
+	provider.Logf(fmt.Sprintf("Starting API on: %s!", httpServer.Addr))
 	if err := httpServer.ListenAndServe(); err != nil {
 		provider.LogFatalf(fmt.Sprintf("error serving api: %s", err.Error()))
 	}
