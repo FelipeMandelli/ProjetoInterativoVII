@@ -8,6 +8,7 @@ import (
 
 const (
 	healthPath        = "/health"
+	dataPath          = "/data"
 	contentTypeHeader = "Content-Type"
 	jsonContentType   = "application/json"
 )
@@ -27,6 +28,7 @@ func CreateRouter(provider Provider) http.Handler {
 	})
 
 	r.Get(healthPath, handler.HealthCheckHandler)
+	r.Get(dataPath, handler.DataReceiverHandler)
 
 	return r
 }
