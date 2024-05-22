@@ -6,7 +6,8 @@ import (
 	"io"
 	"net/http"
 
-	"pi.go/internal/domain"
+	"pi.go/api/internal/domain"
+	domainpkg "pi.go/pkg/domain"
 )
 
 type Handler struct {
@@ -61,7 +62,12 @@ func (h *Handler) DataReceiverHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = Send(*req)
+	err = h.provider.Publisher.Publish(domainpkg.MeasurementDTO{
+		Temperature: req.Temperature,
+		Sound:       req.Sound,
+		Current:     req.Current,
+		Vibration:   req.Vibration,
+	})
 	if err != nil {
 		h.provider.Logf(fmt.Sprintln("could not send req to persistence"))
 
@@ -73,6 +79,9 @@ func (h *Handler) DataReceiverHandler(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 }
 
-func validatePayload(domain.Request) error {
+func validatePayload(req domain.Request) error {
+	if req.Current == 0 {
+		return fmt.Errorf("")
+	}
 	return nil
 }

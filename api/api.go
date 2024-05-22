@@ -2,13 +2,19 @@ package main
 
 import (
 	"fmt"
+	"log"
 	"net/http"
 
-	"pi.go/internal/service"
+	"pi.go/api/internal/service"
 )
 
 func main() {
-	provider := service.NewProvider()
+	publisher, err := service.NewZMQPublisher()
+	if err != nil {
+		log.Fatalf("error initializing publisher: %v", err)
+	}
+
+	provider := service.NewProvider(publisher)
 
 	httpServer := &http.Server{
 		Addr:    "0.0.0.0:9015",
