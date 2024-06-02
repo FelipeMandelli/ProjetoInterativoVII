@@ -1,13 +1,18 @@
 package service
 
-import "log"
+import (
+	"log"
+
+	"gorm.io/gorm"
+)
 
 type Provider struct {
 	log *log.Logger
+	DB  *gorm.DB
 }
 
-func NewProvider() Provider {
-	return Provider{
+func NewProvider() *Provider {
+	return &Provider{
 		log: log.Default(),
 	}
 }

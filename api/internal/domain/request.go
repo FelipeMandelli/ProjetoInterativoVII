@@ -5,4 +5,5 @@ type Request struct {
 	Sound       float32   `json:"som"`
 	Current     float32   `json:"corrente"`
 	Vibration   []float32 `json:"vibracao"`
+	MotorID     string    `json:"id"`
 }

@@ -4,13 +4,16 @@ import (
 	"context"
 	"fmt"
 	"log"
+	"strconv"
+	"strings"
+	"time"
 
 	"github.com/go-zeromq/zmq4"
 	"pi.go/pkg/domain"
 )
 
 type Subscriber interface {
-	Subscribe() error
+	Subscribe(*Provider) error
 }
 
 type ZMQ struct {
@@ -25,7 +28,7 @@ func NewZMQSubscriber() Subscriber {
 	return &zmq
 }
 
-func (z *ZMQ) Subscribe() error {
+func (z *ZMQ) Subscribe(provider *Provider) error {
 
 	go func() {
 		sub := zmq4.NewSub(context.Background())
@@ -72,6 +75,20 @@ func (z *ZMQ) Subscribe() error {
 	go func() {
 		for a := range z.SubChan {
 			fmt.Printf("received dto: %+v\n", a)
+
+			vibration := make([]string, len(a.Vibration))
+			for i, f := range a.Vibration {
+				vibration[i] = strconv.FormatFloat(float64(f), 'f', -1, 32)
+			}
+
+			PersistData(provider, &domain.DataCollection{
+				MotorID:     a.MotorID,
+				Temperature: a.Temperature,
+				Sound:       a.Sound,
+				Current:     a.Current,
+				Vibration:   strings.Join(vibration, ","),
+				DateTime:    time.Time{},
+			})
 		}
 	}()
 

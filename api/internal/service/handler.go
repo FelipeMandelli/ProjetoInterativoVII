@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"time"
 
 	"pi.go/api/internal/domain"
 	domainpkg "pi.go/pkg/domain"
@@ -63,10 +64,12 @@ func (h *Handler) DataReceiverHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	err = h.provider.Publisher.Publish(domainpkg.MeasurementDTO{
+		MotorID:     req.MotorID,
 		Temperature: req.Temperature,
 		Sound:       req.Sound,
 		Current:     req.Current,
 		Vibration:   req.Vibration,
+		DateTime:    time.Now(),
 	})
 	if err != nil {
 		h.provider.Logf(fmt.Sprintln("could not send req to persistence"))
