@@ -12,7 +12,7 @@ import (
 )
 
 type Handler struct {
-	provider Provider
+	provider *Provider
 }
 
 func (h *Handler) HealthCheckHandler(w http.ResponseWriter, r *http.Request) {
@@ -80,6 +80,24 @@ func (h *Handler) DataReceiverHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.WriteHeader(http.StatusOK)
+}
+
+// DataReceiverHandler manipulador para receber dados com filtros opcionais
+func (h *Handler) DataGetterHandler(w http.ResponseWriter, r *http.Request) {
+	filters := make(map[string]string)
+
+	if motorID := r.URL.Query().Get("motor_id"); motorID != "" {
+		filters["motor_identification"] = motorID
+	}
+
+	dataCollections, err := GetDataCollections(h.provider, filters)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(dataCollections)
 }
 
 func validatePayload(req domain.Request) error {

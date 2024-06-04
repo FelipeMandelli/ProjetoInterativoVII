@@ -9,11 +9,12 @@ import (
 const (
 	healthPath        = "/health"
 	dataPath          = "/data"
+	getterPath        = "/data"
 	contentTypeHeader = "Content-Type"
 	jsonContentType   = "application/json"
 )
 
-func CreateRouter(provider Provider) http.Handler {
+func CreateRouter(provider *Provider) http.Handler {
 	handler := Handler{
 		provider: provider,
 	}
@@ -28,7 +29,8 @@ func CreateRouter(provider Provider) http.Handler {
 	})
 
 	r.Get(healthPath, handler.HealthCheckHandler)
-	r.Get(dataPath, handler.DataReceiverHandler)
+	r.Put(dataPath, handler.DataReceiverHandler)
+	r.Get(getterPath, handler.DataGetterHandler)
 
 	return r
 }

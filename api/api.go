@@ -16,6 +16,11 @@ func main() {
 
 	provider := service.NewProvider(publisher)
 
+	err = service.ConnectDatabase(provider)
+	if err != nil {
+		provider.LogFatalf(fmt.Sprintf("error connecting to database: %v", err))
+	}
+
 	httpServer := &http.Server{
 		Addr:    "0.0.0.0:9015",
 		Handler: service.CreateRouter(provider),
