@@ -3,10 +3,15 @@ package main
 import (
 	"encoding/json"
 	"log"
+	"math/cmplx"
 	"net/http"
+	"strconv"
+	"strings"
+	"time"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/gorilla/websocket"
+	"github.com/mjibson/go-dsp/fft"
 	"gorm.io/gorm"
 
 	service "pi.go/front-attempt/services"
@@ -20,6 +25,17 @@ var upgrader = websocket.Upgrader{
 	CheckOrigin: func(r *http.Request) bool {
 		return true
 	},
+}
+
+// ProcessedData representa os dados processados para o frontend
+type ProcessedData struct {
+	MotorID       string    `json:"motor_id"`
+	Temperature   float32   `json:"temperature"`
+	Sound         float32   `json:"sound"`
+	Current       float32   `json:"current"`
+	Vibration     []float64 `json:"vibration"`
+	VibrationFreq []float64 `json:"vibration_freq"`
+	DateTime      time.Time `json:"datetime"`
 }
 
 func main() {
@@ -54,7 +70,34 @@ func getData(w http.ResponseWriter, r *http.Request) {
 	var dataCollections []domain.DataCollection
 	DB.Find(&dataCollections)
 
-	response, err := json.Marshal(dataCollections)
+	var processedData []ProcessedData
+
+	for _, item := range dataCollections {
+		vibrationStrings := strings.Split(item.Vibration, ",")
+		vibrationFloats := make([]float64, len(vibrationStrings))
+		for i, v := range vibrationStrings {
+			vibrationFloats[i], _ = strconv.ParseFloat(v, 64)
+		}
+
+		// Apply FFT
+		vibrationFreq := fft.FFTReal(vibrationFloats)
+		vibrationMagnitudes := make([]float64, len(vibrationFreq))
+		for i, c := range vibrationFreq {
+			vibrationMagnitudes[i] = cmplx.Abs(c)
+		}
+
+		processedData = append(processedData, ProcessedData{
+			MotorID:       item.MotorID,
+			Temperature:   item.Temperature,
+			Sound:         item.Sound,
+			Current:       item.Current,
+			Vibration:     vibrationFloats,
+			VibrationFreq: vibrationMagnitudes,
+			DateTime:      item.DateTime,
+		})
+	}
+
+	response, err := json.Marshal(processedData)
 	if err != nil {
 		http.Error(w, "Error: "+err.Error(), http.StatusInternalServerError)
 		return
