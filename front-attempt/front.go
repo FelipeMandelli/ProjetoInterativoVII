@@ -36,7 +36,7 @@ func main() {
 		http.ServeFile(w, r, "./front-attempt/index.html")
 	})
 
-	r.Get("/ws", handleWebSocket)
+	r.Get("/data", getData)
 
 	log.Println("Server started at :8080")
 	err = http.ListenAndServe(":8080", r)
@@ -45,38 +45,16 @@ func main() {
 	}
 }
 
-func handleWebSocket(w http.ResponseWriter, r *http.Request) {
-	conn, err := upgrader.Upgrade(w, r, nil)
+func getData(w http.ResponseWriter, r *http.Request) {
+	var dataCollections []domain.DataCollection
+	DB.Find(&dataCollections)
+
+	response, err := json.Marshal(dataCollections)
 	if err != nil {
-		log.Println("Failed to upgrade connection:", err)
+		http.Error(w, "Error: "+err.Error(), http.StatusInternalServerError)
 		return
 	}
-	defer conn.Close()
 
-	log.Println("WebSocket connection established")
-
-	for {
-		_, motorID, err := conn.ReadMessage()
-		if err != nil {
-			log.Println("Read error:", err)
-			return
-		}
-
-		log.Printf("Received motor ID: %s", string(motorID))
-
-		var dataCollections []domain.DataCollection
-		DB.Where("motor_identification = ?", string(motorID)).Find(&dataCollections)
-
-		response, err := json.Marshal(dataCollections)
-		if err != nil {
-			log.Println("Marshal error:", err)
-			conn.WriteMessage(websocket.TextMessage, []byte("Error: "+err.Error()))
-			continue
-		}
-
-		if err := conn.WriteMessage(websocket.TextMessage, response); err != nil {
-			log.Println("Write error:", err)
-			return
-		}
-	}
+	w.Header().Set("Content-Type", "application/json")
+	w.Write(response)
 }
