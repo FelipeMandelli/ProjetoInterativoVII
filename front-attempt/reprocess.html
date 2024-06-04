@@ -23,7 +23,7 @@
         let vibrationChart; // Variable to store the vibration chart instance
 
         function fetchData() {
-            fetch("/data")
+            fetch("/processedData")
                 .then(response => response.json())
                 .then(data => {
                     renderData(data);
@@ -52,13 +52,13 @@
                 return;
             }
 
+            // Converter a string de vibração de volta para um slice de float32
+            const vibrationData = vibrationDataStr.split(',').map(parseFloat);
+
             // Restante do código para renderizar o gráfico
             if (vibrationChart) {
                 vibrationChart.destroy(); // Destroy the previous chart instance if it exists
             }
-
-            // Convert vibration data string to array of floats
-            const vibrationData = vibrationDataStr.split(',').map(parseFloat);
 
             const labels = vibrationData.map((_, i) => i);
 
