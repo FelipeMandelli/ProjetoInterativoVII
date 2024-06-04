@@ -22,6 +22,9 @@
         const vibrationChartCtx = document.getElementById("vibrationChart").getContext("2d");
         const vibrationFreqChartCtx = document.getElementById("vibrationFreqChart").getContext("2d");
 
+        let vibrationChart; // Variable to store the vibration chart instance
+        let vibrationFreqChart; // Variable to store the vibration frequency chart instance
+
         function fetchData() {
             fetch("/processedData")
                 .then(response => response.json())
@@ -51,6 +54,10 @@
         }
 
         function renderVibrationChart(vibrationData) {
+            if (vibrationChart) {
+                vibrationChart.destroy(); // Destroy the previous chart instance if it exists
+            }
+
             const labels = vibrationData.map((_, i) => i);
 
             const chartData = {
@@ -85,10 +92,14 @@
                 }
             };
 
-            new Chart(vibrationChartCtx, config);
+            vibrationChart = new Chart(vibrationChartCtx, config);
         }
 
         function renderVibrationFreqChart(vibrationFreqData) {
+            if (vibrationFreqChart) {
+                vibrationFreqChart.destroy(); // Destroy the previous chart instance if it exists
+            }
+
             const labels = vibrationFreqData.map((_, i) => i);
 
             const chartData = {
@@ -123,7 +134,7 @@
                 }
             };
 
-            new Chart(vibrationFreqChartCtx, config);
+            vibrationFreqChart = new Chart(vibrationFreqChartCtx, config);
         }
 
         refreshButton.addEventListener("click", fetchData);
