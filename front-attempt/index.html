@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Data Viewer</title>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const socket = new WebSocket("ws://localhost:8080/ws");
+            const motorIdInput = document.getElementById("motor_id");
+            const dataDisplay = document.getElementById("data_display");
+
+            motorIdInput.addEventListener("input", function() {
+                if (socket.readyState === WebSocket.OPEN) {
+                    socket.send(motorIdInput.value);
+                }
+            });
+
+            socket.onmessage = function(event) {
+                const data = JSON.parse(event.data);
+                dataDisplay.innerHTML = "";
+                data.forEach(item => {
+                    const div = document.createElement("div");
+                    div.textContent = `Motor ID: ${item.MotorID}, Temperature: ${item.Temperature}, Sound: ${item.Sound}, Current: ${item.Current}, Vibration: ${item.Vibration}, DateTime: ${item.DateTime}`;
+                    dataDisplay.appendChild(div);
+                });
+            };
+
+            socket.onerror = function(event) {
+                dataDisplay.innerHTML = "WebSocket error: " + event.message;
+            };
+        });
+    </script>
+</head>
+<body>
+    <h1>Data Viewer</h1>
+    <label for="motor_id">Motor ID:</label>
+    <input type="text" id="motor_id">
+    <div id="data_display"></div>
+</body>
+</html>
