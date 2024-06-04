@@ -8,6 +8,7 @@ import (
 	"github.com/go-chi/chi/v5"
 	"github.com/gorilla/websocket"
 	"gorm.io/gorm"
+
 	service "pi.go/front-attempt/services"
 	"pi.go/pkg/domain"
 )
@@ -32,12 +33,15 @@ func main() {
 	r := chi.NewRouter()
 
 	r.Get("/", func(w http.ResponseWriter, r *http.Request) {
-		http.ServeFile(w, r, "index.html")
+		http.ServeFile(w, r, "./front-attempt/index.html")
 	})
 
 	r.Get("/ws", handleWebSocket)
 
-	http.ListenAndServe(":8080", r)
+	err = http.ListenAndServe(":8080", r)
+	if err != nil {
+		log.Default().Fatalf("error connecting to database: %v", err)
+	}
 }
 
 func handleWebSocket(w http.ResponseWriter, r *http.Request) {
