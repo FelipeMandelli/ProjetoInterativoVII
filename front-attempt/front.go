@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"log"
 	"net/http"
-	"time"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/gorilla/websocket"
@@ -21,17 +20,6 @@ var upgrader = websocket.Upgrader{
 	CheckOrigin: func(r *http.Request) bool {
 		return true
 	},
-}
-
-// ProcessedData representa os dados processados para o frontend
-type ProcessedData struct {
-	MotorID       string    `json:"motor_id"`
-	Temperature   float32   `json:"temperature"`
-	Sound         float32   `json:"sound"`
-	Current       float32   `json:"current"`
-	Vibration     []float64 `json:"vibration"`
-	VibrationFreq []float64 `json:"vibration_freq"`
-	DateTime      time.Time `json:"datetime"`
 }
 
 func main() {

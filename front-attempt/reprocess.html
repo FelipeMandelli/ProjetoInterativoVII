@@ -38,7 +38,7 @@
             dataDisplay.innerHTML = "";
             data.forEach(item => {
                 const div = document.createElement("div");
-                div.textContent = `Motor ID: ${item.motor_id}, Temperature: ${item.temperature}, Sound: ${item.sound}, Current: ${item.current}, DateTime: ${item.datetime}`;
+                div.textContent = `Motor ID: ${item.motorID}, Temperature: ${item.temperature}, Sound: ${item.sound}, Current: ${item.current}, DateTime: ${item.dateTime}`;
                 div.className = "data-item";
                 div.addEventListener("click", () => renderVibrationChart(item.vibration));
                 dataDisplay.appendChild(div);
