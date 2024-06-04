@@ -13,7 +13,7 @@ func ConnectDatabase(provider *Provider) error {
 		3306,
 		"database-pi7.c9m0oesie62n.sa-east-1.rds.amazonaws.com",
 		"admin",
-		"",
+		"devfelipe",
 		"motor_monitoring",
 	)), &gorm.Config{})
 	if err != nil {
