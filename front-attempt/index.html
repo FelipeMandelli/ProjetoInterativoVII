@@ -10,6 +10,15 @@
             const motorIdInput = document.getElementById("motor_id");
             const dataDisplay = document.getElementById("data_display");
 
+            socket.onopen = function() {
+                console.log("WebSocket connection established");
+            };
+
+            socket.onerror = function(event) {
+                console.error("WebSocket error:", event);
+                dataDisplay.innerHTML = "WebSocket error: " + event.message;
+            };
+
             motorIdInput.addEventListener("input", function() {
                 if (socket.readyState === WebSocket.OPEN) {
                     socket.send(motorIdInput.value);
@@ -26,8 +35,8 @@
                 });
             };
 
-            socket.onerror = function(event) {
-                dataDisplay.innerHTML = "WebSocket error: " + event.message;
+            socket.onclose = function(event) {
+                console.log("WebSocket connection closed:", event);
             };
         });
     </script>
