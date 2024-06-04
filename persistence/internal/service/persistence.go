@@ -11,10 +11,10 @@ import (
 func ConnectDatabase(provider *Provider) error {
 	db, err := gorm.Open(mysql.Open(createDBConnString(
 		3306,
+		"database-pi7.c9m0oesie62n.sa-east-1.rds.amazonaws.com",
+		"admin",
 		"",
-		"",
-		"",
-		"",
+		"motor_monitoring",
 	)), &gorm.Config{})
 	if err != nil {
 		return fmt.Errorf("could not create connection: %w", err)
