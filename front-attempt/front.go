@@ -36,6 +36,11 @@ func main() {
 		http.ServeFile(w, r, "./front-attempt/index.html")
 	})
 
+	r.Get("/styles.css", func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "text/css")
+		http.ServeFile(w, r, "./front-attempt/styles.css")
+	})
+
 	r.Get("/data", getData)
 
 	log.Println("Server started at :8080")
