@@ -3,30 +3,27 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Data Reprocessing</title>
+    <title>Data Display</title>
     <link rel="stylesheet" href="styles.css" type="text/css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
     <div class="container">
-        <h1>Data Reprocessing</h1>
+        <h1>Data Display</h1>
         <button id="refreshButton" class="button">Refresh</button>
         <div id="dataDisplay" class="data-display"></div>
-        <canvas id="vibrationChart" width="800" height="400"></canvas>
-        <canvas id="vibrationFreqChart" width="800" height="400"></canvas>
+        <canvas id="vibrationChart" width="800" height="400" style="display:none;"></canvas>
     </div>
 
     <script>
         const refreshButton = document.getElementById("refreshButton");
         const dataDisplay = document.getElementById("dataDisplay");
         const vibrationChartCtx = document.getElementById("vibrationChart").getContext("2d");
-        const vibrationFreqChartCtx = document.getElementById("vibrationFreqChart").getContext("2d");
 
         let vibrationChart; // Variable to store the vibration chart instance
-        let vibrationFreqChart; // Variable to store the vibration frequency chart instance
 
         function fetchData() {
-            fetch("/processedData")
+            fetch("/data")
                 .then(response => response.json())
                 .then(data => {
                     renderData(data);
@@ -43,20 +40,18 @@
                 const div = document.createElement("div");
                 div.textContent = `Motor ID: ${item.motor_id}, Temperature: ${item.temperature}, Sound: ${item.sound}, Current: ${item.current}, DateTime: ${item.datetime}`;
                 div.className = "data-item";
+                div.addEventListener("click", () => renderVibrationChart(item.vibration));
                 dataDisplay.appendChild(div);
-
-                // Display vibration data in chart
-                renderVibrationChart(item.vibration);
-
-                // Display vibration frequency data in chart
-                renderVibrationFreqChart(item.vibration_freq);
             });
         }
 
-        function renderVibrationChart(vibrationData) {
+        function renderVibrationChart(vibrationDataStr) {
             if (vibrationChart) {
                 vibrationChart.destroy(); // Destroy the previous chart instance if it exists
             }
+
+            // Convert vibration data string to array of floats
+            const vibrationData = vibrationDataStr.split(',').map(parseFloat);
 
             const labels = vibrationData.map((_, i) => i);
 
@@ -93,48 +88,7 @@
             };
 
             vibrationChart = new Chart(vibrationChartCtx, config);
-        }
-
-        function renderVibrationFreqChart(vibrationFreqData) {
-            if (vibrationFreqChart) {
-                vibrationFreqChart.destroy(); // Destroy the previous chart instance if it exists
-            }
-
-            const labels = vibrationFreqData.map((_, i) => i);
-
-            const chartData = {
-                labels: labels,
-                datasets: [{
-                    label: 'Vibration Frequency Spectrum',
-                    data: vibrationFreqData,
-                    backgroundColor: 'rgba(54, 162, 235, 0.2)',
-                    borderColor: 'rgba(54, 162, 235, 1)',
-                    borderWidth: 1
-                }]
-            };
-
-            const config = {
-                type: 'line',
-                data: chartData,
-                options: {
-                    scales: {
-                        x: {
-                            title: {
-                                display: true,
-                                text: 'Frequency'
-                            }
-                        },
-                        y: {
-                            title: {
-                                display: true,
-                                text: 'Magnitude'
-                            }
-                        }
-                    }
-                }
-            };
-
-            vibrationFreqChart = new Chart(vibrationFreqChartCtx, config);
+            document.getElementById("vibrationChart").style.display = 'block'; // Show the canvas
         }
 
         refreshButton.addEventListener("click", fetchData);

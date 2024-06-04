@@ -33,6 +33,7 @@ h1 {
     border: 1px solid #ddd;
     padding: 10px;
     margin-bottom: 10px;
+    cursor: pointer;
 }
 
 .data-item:last-child {

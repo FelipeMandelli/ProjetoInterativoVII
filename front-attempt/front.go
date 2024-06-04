@@ -3,15 +3,11 @@ package main
 import (
 	"encoding/json"
 	"log"
-	"math/cmplx"
 	"net/http"
-	"strconv"
-	"strings"
 	"time"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/gorilla/websocket"
-	"github.com/mjibson/go-dsp/fft"
 	"gorm.io/gorm"
 
 	service "pi.go/front-attempt/services"
@@ -91,34 +87,7 @@ func getProcessedData(w http.ResponseWriter, r *http.Request) {
 	var dataCollections []domain.DataCollection
 	DB.Find(&dataCollections)
 
-	var processedData []ProcessedData
-
-	for _, item := range dataCollections {
-		vibrationStrings := strings.Split(item.Vibration, ",")
-		vibrationFloats := make([]float64, len(vibrationStrings))
-		for i, v := range vibrationStrings {
-			vibrationFloats[i], _ = strconv.ParseFloat(v, 64)
-		}
-
-		// Apply FFT
-		vibrationFreq := fft.FFTReal(vibrationFloats)
-		vibrationMagnitudes := make([]float64, len(vibrationFreq))
-		for i, c := range vibrationFreq {
-			vibrationMagnitudes[i] = cmplx.Abs(c)
-		}
-
-		processedData = append(processedData, ProcessedData{
-			MotorID:       item.MotorID,
-			Temperature:   item.Temperature,
-			Sound:         item.Sound,
-			Current:       item.Current,
-			Vibration:     vibrationFloats,
-			VibrationFreq: vibrationMagnitudes,
-			DateTime:      item.DateTime,
-		})
-	}
-
-	response, err := json.Marshal(processedData)
+	response, err := json.Marshal(dataCollections)
 	if err != nil {
 		http.Error(w, "Error: "+err.Error(), http.StatusInternalServerError)
 		return
