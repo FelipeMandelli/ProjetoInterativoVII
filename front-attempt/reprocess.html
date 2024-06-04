@@ -23,9 +23,10 @@
         let vibrationChart; // Variable to store the vibration chart instance
 
         function fetchData() {
-            fetch("/processedData")
+            fetch("/data")
                 .then(response => response.json())
                 .then(data => {
+                    console.log("Data received:", data); // Adicionando uma mensagem de depuração
                     renderData(data);
                 })
                 .catch(error => {
