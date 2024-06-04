@@ -52,12 +52,19 @@ func main() {
 		http.ServeFile(w, r, "./front-attempt/index.html")
 	})
 
+	// Servir o arquivo HTML para reprocessamento
+	r.Get("/processed", func(w http.ResponseWriter, r *http.Request) {
+		http.ServeFile(w, r, "./front-attempt/reprocess.html")
+	})
+
 	r.Get("/styles.css", func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "text/css")
 		http.ServeFile(w, r, "./front-attempt/styles.css")
 	})
 
 	r.Get("/data", getData)
+
+	r.Get("/processedData", getProcessedData)
 
 	log.Println("Server started at :8080")
 	err = http.ListenAndServe(":8080", r)
@@ -67,6 +74,20 @@ func main() {
 }
 
 func getData(w http.ResponseWriter, r *http.Request) {
+	var dataCollections []domain.DataCollection
+	DB.Find(&dataCollections)
+
+	response, err := json.Marshal(dataCollections)
+	if err != nil {
+		http.Error(w, "Error: "+err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.Write(response)
+}
+
+func getProcessedData(w http.ResponseWriter, r *http.Request) {
 	var dataCollections []domain.DataCollection
 	DB.Find(&dataCollections)
 
