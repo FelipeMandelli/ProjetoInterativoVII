@@ -46,6 +46,13 @@
         }
 
         function renderVibrationChart(vibrationDataStr) {
+            // Verificar se vibrationDataStr é undefined ou vazio
+            if (!vibrationDataStr) {
+                console.error("Vibration data is empty or undefined.");
+                return;
+            }
+
+            // Restante do código para renderizar o gráfico
             if (vibrationChart) {
                 vibrationChart.destroy(); // Destroy the previous chart instance if it exists
             }
