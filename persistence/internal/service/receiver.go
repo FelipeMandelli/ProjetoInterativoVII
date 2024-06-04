@@ -87,7 +87,7 @@ func (z *ZMQ) Subscribe(provider *Provider) error {
 				Sound:       a.Sound,
 				Current:     a.Current,
 				Vibration:   strings.Join(vibration, ","),
-				DateTime:    time.Time{},
+				DateTime:    a.DateTime,
 			})
 		}
 	}()

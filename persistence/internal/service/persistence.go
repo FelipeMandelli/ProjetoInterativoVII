@@ -38,7 +38,7 @@ func PersistData(p *Provider, data *domain.DataCollection) error {
 		return fmt.Errorf("could not perform insert: %w", err)
 	}
 
-	fmt.Printf("persisted data: [%+v]", data)
+	fmt.Printf("persisted data: [%+v]\n", data)
 
 	return nil
 }
